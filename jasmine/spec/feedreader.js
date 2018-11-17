@@ -8,13 +8,13 @@
  * since some of these tests may require DOM elements. We want
  * to ensure they don't run until the DOM is ready.
  */
-$(function() {
+$(function () {
 
-    describe('RSS Feeds', function() {
+    describe('RSS Feeds', function () {
         /* This is our first test - This tests to make sure that the
          * allFeeds variable has been defined and that it is not empty
-        */
-        it('feeds are defined', function() {
+         */
+        it('feeds are defined', function () {
             expect(allFeeds).toBeDefined();
             expect(allFeeds.length).not.toBe(0);
         });
@@ -25,7 +25,7 @@ $(function() {
          */
 
         it('url are defined', function () {
-            for(let feed of allFeeds) {
+            for (let feed of allFeeds) {
                 expect(feed.url).toBeDefined();
                 expect(feed.url.length).not.toBe(0);
             }
@@ -37,7 +37,7 @@ $(function() {
          */
 
         it('name are defined', function () {
-            for(let feed of allFeeds) {
+            for (let feed of allFeeds) {
                 expect(feed.name).toBeDefined();
                 expect(feed.name.length).not.toBe(0);
             }
@@ -51,18 +51,18 @@ $(function() {
          * hiding/showing of the menu element.
          */
 
-        it('is hidden', function() {
+        it('is hidden', function () {
             const body = document.querySelector('body');
             expect(body.classList.contains('menu-hidden')).toBe(true);
         });
 
-         /*This test ensures that the menu changes
-          * visibility when the menu icon is clicked. This test
-          * should have two expectations: does the menu display when
-          * clicked and does it hide when clicked again.
-          */
+        /*This test ensures that the menu changes
+         * visibility when the menu icon is clicked. This test
+         * should have two expectations: does the menu display when
+         * clicked and does it hide when clicked again.
+         */
 
-        it('toggles on and off', function() {
+        it('toggles on and off', function () {
             const body = document.querySelector('body');
             const menu = document.querySelector('.menu-icon-link');
 
@@ -77,45 +77,42 @@ $(function() {
 
     /*Write a new test suite named "Initial Entries" */
 
-    describe('Initial Entries', function() {
+    describe('Initial Entries', function () {
         /*This test ensures that when the loadFeed
          * function is called and completes its work, there is at least
          * a single .entry element within the .feed container.
          * Remember, loadFeed() is asynchronous so this test will require
          * the use of Jasmine's beforeEach and asynchronous done() function.
          */
-        beforeEach(function(done) {
+        beforeEach(function (done) {
             loadFeed(0, function () {
                 done();
             });
         });
 
         it('defines if entry has more than 0 entries', function () {
-            expect($('.feed .entry')).toBeDefined();
+            expect($('.feed .entry').length).toBeGreaterThan(0);
         });
     })
 
-    describe('New Feed Selection', function(){
+    describe('New Feed Selection', function () {
+        let oldFeed;
         /*This test ensures that when a new feed is loaded
          * by the loadFeed function that the content actually changes.
          * Remember, loadFeed() is asynchronous.
          */
-        beforeEach(function(done) {
-            $('.feed').empty();
+        beforeEach(function (done) {
             loadFeed(0, function () {
-                entriesStart = $('.feed').find(allFeeds.url);
-            });
-            loadFeed(1, function () {
-                entriesEnd = $('.feed').find(allFeeds.url);
-                done();
+                // store old feed
+                oldFeed = $('.feed').html();
+                // fetch newer feed
+                loadFeed(1, done);
             });
         });
 
-        it('new feed change from old one', function () {
-            expect(entriesStart).not.toBe(entriesEnd);
-        })
-
-
+        it('is different from old', function () {
+            expect($('.feed').html()).not.toBe(oldFeed);
+        });
 
     });
 }());
